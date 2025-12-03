@@ -4,10 +4,22 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include "../include/common.h"
+#include "../include/file.h"
+
+void print_usage(char *argv[]) {
+  printf("Usage: %s -n -f <database_file>\n", argv[0]);
+  printf("\t -n - create new database file\n");
+  printf("\t -f - (required) path to database file\n");
+  return;
+}
+
 int main(int argc, char *argv[]) {
   char *filepath = NULL;
   bool newfile = false;
   int c;
+
+  int database_fd = -1;
 
   while ((c = getopt(argc, argv, "nf:")) != -1) {
     switch (c) {
@@ -24,6 +36,26 @@ int main(int argc, char *argv[]) {
       return -1;
     }
   }
+
+  if (filepath == NULL) {
+    printf("Filepath is a required argument.\n");
+    print_usage(argv);
+  }
+
+  if (newfile) {
+    database_fd = create_db_file(filepath);
+    if (database_fd == STATUS_ERROR) {
+      printf("Unable to create database file.\n");
+      return STATUS_ERROR;
+    }
+  } else {
+    database_fd = open_db_file(filepath);
+    if (database_fd == STATUS_ERROR) {
+      printf("Unable to open database file.\n");
+      return STATUS_ERROR;
+    }
+  }
+
   printf("Newfile: %d\n", newfile);
   printf("Filepath: %s\n", filepath);
 

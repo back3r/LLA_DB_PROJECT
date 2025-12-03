@@ -1,51 +1,19 @@
-# Compiler and flags
-CC      = clang
-CSTD    = -std=c23
-CFLAGS  = -Wall -Wextra -pedantic
-DEBUG   = -g
+TARGET = bin/dbview
+SRC = $(wildcard src/*.c)
+OBJ = $(patsubst src/%.c, obj/%.o, $(SRC))
 
-# Directories
-SRCDIR  = src
-INCDIR  = include
-ODIR    = obj
-BINDIR  = bin
+run: clean default
+	./$(TARGET)
 
-# Files
-SRC     = $(wildcard $(SRCDIR)/*.c)
-OBJ     = $(patsubst $(SRCDIR)/%.c, $(ODIR)/%.o, $(SRC))
-BIN     = $(BINDIR)/dbview
+default: $(TARGET)
 
-# Default target
-all: $(BIN)
-
-# Link the final executable
-$(BIN): $(OBJ) | $(BINDIR)
-	@echo "Linking $(BIN)..."
-	$(CC) $(CFLAGS) $(CSTD) -o $@ $^
-
-# Compile each source file into obj/*.o
-$(ODIR)/%.o: $(SRCDIR)/%.c | $(ODIR)
-	@echo "Compiling $<..."
-	$(CC) $(CFLAGS) $(CSTD) -I$(INCDIR) -c -o $@ $<
-
-# Debug build
-debug: CFLAGS += $(DEBUG)
-debug: clean all
-	@echo "Debug build complete!"
-
-# Create directories if missing
-$(ODIR):
-	mkdir -p $(ODIR)
-
-$(BINDIR):
-	mkdir -p $(BINDIR)
-
-# Remove all build files
 clean:
-	rm -f $(ODIR)/*.o
-	rm -f $(BIN)
+	rm -f obj/*.o
+	rm -f bin/*
+	rm -f *.db
 
-run: all
-	./$(BIN)
+$(TARGET): $(OBJ)
+	gcc -o $@ $?
 
-.PHONY: all clean debug run
+obj/%.o: src/%.c
+	gcc -c $< -o $@ -Iinclude

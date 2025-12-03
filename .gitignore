@@ -55,4 +55,5 @@ dkms.conf
 *.dwo
 
 # compiled
-bin/
+bin/*
+bin

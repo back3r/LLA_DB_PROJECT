@@ -13,7 +13,7 @@ BINDIR  = bin
 # Files
 SRC     = $(wildcard $(SRCDIR)/*.c)
 OBJ     = $(patsubst $(SRCDIR)/%.c, $(ODIR)/%.o, $(SRC))
-BIN     = $(BINDIR)/main
+BIN     = $(BINDIR)/dbview
 
 # Default target
 all: $(BIN)
